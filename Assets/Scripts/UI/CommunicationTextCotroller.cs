@@ -6,6 +6,8 @@ public class CommunicationTextController : MonoBehaviour
 {
     [SerializeField] private TMP_Text _text;
 
+    [SerializeField] private FreeCameraZone[] _freeCameraZones;
+
     private PlayerPicker _playerPicker;
 
     [Inject]
@@ -25,6 +27,15 @@ public class CommunicationTextController : MonoBehaviour
         _playerPicker.OnLostPickableObject += DisableText;
         _playerPicker.OnExitPoint += DisableText;
         _playerPicker.OnEnterPoint += HandlePointEnterance;
+
+        if (_freeCameraZones.Length > 0)
+        {
+            foreach (var zone in _freeCameraZones)
+            {
+                zone.OnPlayerEnterZone += EnableZoneText;
+                zone.OnPlayerLeaveZone += DisableText;
+            }
+        }
     }
 
     private void OnDisable()
@@ -33,6 +44,15 @@ public class CommunicationTextController : MonoBehaviour
         _playerPicker.OnLostPickableObject -= DisableText;
         _playerPicker.OnExitPoint -= DisableText;
         _playerPicker.OnEnterPoint -= HandlePointEnterance;
+
+        if (_freeCameraZones.Length > 0)
+        {
+            foreach (var zone in _freeCameraZones)
+            {
+                zone.OnPlayerEnterZone -= EnableZoneText;
+                zone.OnPlayerLeaveZone -= DisableText;
+            }
+        }
     }
 
     private void HandlePointEnterance(bool isEmpty)
@@ -56,6 +76,12 @@ public class CommunicationTextController : MonoBehaviour
     private void EnablePutUpText()
     {
         _text.text = "Press \"F\" to put up";
+        _text.enabled = true;
+    }
+
+    private void EnableZoneText()
+    {
+        _text.text = "Press \"F\" to switch view";
         _text.enabled = true;
     }
 

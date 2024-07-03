@@ -47,10 +47,7 @@ public class PlayerMover : MonoBehaviour
     {
         Vector2 movementDirection = ReadInputValues();
 
-        if (movementDirection != Vector2.zero)
-        {
-            Move(movementDirection);
-        }
+        Move(movementDirection);
 
         if (movementDirection != _lastMovementValue)
         {

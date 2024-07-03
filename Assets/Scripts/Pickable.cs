@@ -19,10 +19,10 @@ public class Pickable : MonoBehaviour, IPickable
     {
         ChangeCollidersState(false);
 
-        transform.position = picker.position;
-        transform.parent = picker.transform;
+        transform.SetParent(picker.transform);
+        transform.localPosition = Vector3.zero;
 
-        _rigidbody.useGravity = false;
+        _rigidbody.isKinematic = true;
         _rigidbody.velocity = Vector3.zero;
     }
 
@@ -32,8 +32,8 @@ public class Pickable : MonoBehaviour, IPickable
 
         Transform parent = transform.parent;
 
-        transform.parent = null;
-        _rigidbody.useGravity = true;
+        transform.SetParent(null);
+        _rigidbody.isKinematic = false;
         _rigidbody.velocity = parent.forward * throwingForce;
     }
 

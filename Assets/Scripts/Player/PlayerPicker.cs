@@ -1,5 +1,4 @@
 using System;
-using System.Runtime.CompilerServices;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using Zenject;
@@ -8,6 +7,8 @@ public class PlayerPicker : MonoBehaviour
 {
     public event Action OnFindPickableObject;
     public event Action OnLostPickableObject;
+    public event Action<bool> OnEnterPoint;
+    public event Action OnExitPoint;
     public event Action<bool> OnHoldingChanged;
 
     private bool _isHolding = false;
@@ -21,6 +22,8 @@ public class PlayerPicker : MonoBehaviour
 
     private MainInput _input;
 
+    private Point _currentPoint;
+
     [Inject] 
     private void Initialize(MainInput input)
     {
@@ -31,12 +34,14 @@ public class PlayerPicker : MonoBehaviour
     {
         _input.Player.PickUp.performed += HandlePickingUp;
         _input.Player.ThrowOut.performed += HandleThrowOut;
+        _input.Player.PickUp.performed += HandlePoint;
     }
 
     private void OnDisable()
     {
         _input.Player.PickUp.performed -= HandlePickingUp;
         _input.Player.ThrowOut.performed -= HandleThrowOut;
+        _input.Player.PickUp.performed -= HandlePoint;
     }
 
     private void OnTriggerEnter(Collider other)
@@ -47,6 +52,13 @@ public class PlayerPicker : MonoBehaviour
 
             _clothestPickable = pickable;
         }
+
+        if (other.TryGetComponent<Point>(out var point))
+        {
+            _currentPoint = point;
+
+            OnEnterPoint?.Invoke(point.IsEmpty);
+        }
     }
 
     private void OnTriggerExit(Collider other)
@@ -55,22 +67,56 @@ public class PlayerPicker : MonoBehaviour
         {
             OnLostPickableObject?.Invoke();
 
-            _clothestPickable = pickable;
+            _clothestPickable = null;
+        }
+
+        if (other.TryGetComponent<Point>(out var point))
+        {
+            _currentPoint = null;
+
+            OnExitPoint?.Invoke();
         }
     }
 
     private void HandlePickingUp(InputAction.CallbackContext context)
     {
-        if (_isHolding)
+        if (_isHolding || _clothestPickable is null)
         {
             return;
         }
 
         _isHolding = true;
         OnHoldingChanged?.Invoke(_isHolding);
+        OnLostPickableObject?.Invoke();
 
         _clothestPickable.PickUp(_pickedItemPosition);
         _currentPickable = _clothestPickable;
+    }
+
+    private void HandlePoint(InputAction.CallbackContext context)
+    {
+        if (_currentPoint is null)
+        {
+            return;
+        }
+
+        if (_currentPickable is not null && _currentPoint.IsEmpty)
+        {
+            _currentPoint.PutPickable(_currentPickable);
+
+            _isHolding = false;
+            OnHoldingChanged?.Invoke(_isHolding);
+            OnLostPickableObject?.Invoke();
+            _currentPickable = null;
+            _clothestPickable = null;
+        }
+        else if (_currentPickable is null && !_currentPoint.IsEmpty)
+        {
+            _currentPickable = _currentPoint.GetPickable(_pickedItemPosition);
+
+            _isHolding = true;
+            OnHoldingChanged?.Invoke(_isHolding);
+        }
     }
 
     private void HandleThrowOut(InputAction.CallbackContext context)

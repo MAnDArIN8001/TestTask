@@ -59,6 +59,11 @@ public class FreeCameraZone : MonoBehaviour
 
     private void HandleCommunication(InputAction.CallbackContext context)
     {
+        if (_currentMover is null)
+        {
+            return;
+        } 
+
         _currentState = _currentState == CameraZoneState.Default ? CameraZoneState.InZoom : CameraZoneState.Default;
 
         _currentMover.enabled = _currentState == CameraZoneState.Default;

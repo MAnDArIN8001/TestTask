@@ -44,6 +44,15 @@ public partial class @BaseInput: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""ClickPosition"",
+                    ""type"": ""Value"",
+                    ""id"": ""cb3fa326-6fe3-4a25-94dc-4af3408eea24"",
+                    ""expectedControlType"": ""Vector2"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": true
                 }
             ],
             ""bindings"": [
@@ -90,6 +99,28 @@ public partial class @BaseInput: IInputActionCollection2, IDisposable
                     ""action"": ""Click"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""e19e07b8-cf99-469d-8772-42dca3f63944"",
+                    ""path"": ""<Mouse>/position"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""ClickPosition"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""b51e2515-81dd-491f-b745-e526d91ef453"",
+                    ""path"": ""<Touchscreen>/position"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""ClickPosition"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -100,6 +131,7 @@ public partial class @BaseInput: IInputActionCollection2, IDisposable
         m_Controls = asset.FindActionMap("Controls", throwIfNotFound: true);
         m_Controls_Rotation = m_Controls.FindAction("Rotation", throwIfNotFound: true);
         m_Controls_Click = m_Controls.FindAction("Click", throwIfNotFound: true);
+        m_Controls_ClickPosition = m_Controls.FindAction("ClickPosition", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -163,12 +195,14 @@ public partial class @BaseInput: IInputActionCollection2, IDisposable
     private List<IControlsActions> m_ControlsActionsCallbackInterfaces = new List<IControlsActions>();
     private readonly InputAction m_Controls_Rotation;
     private readonly InputAction m_Controls_Click;
+    private readonly InputAction m_Controls_ClickPosition;
     public struct ControlsActions
     {
         private @BaseInput m_Wrapper;
         public ControlsActions(@BaseInput wrapper) { m_Wrapper = wrapper; }
         public InputAction @Rotation => m_Wrapper.m_Controls_Rotation;
         public InputAction @Click => m_Wrapper.m_Controls_Click;
+        public InputAction @ClickPosition => m_Wrapper.m_Controls_ClickPosition;
         public InputActionMap Get() { return m_Wrapper.m_Controls; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -184,6 +218,9 @@ public partial class @BaseInput: IInputActionCollection2, IDisposable
             @Click.started += instance.OnClick;
             @Click.performed += instance.OnClick;
             @Click.canceled += instance.OnClick;
+            @ClickPosition.started += instance.OnClickPosition;
+            @ClickPosition.performed += instance.OnClickPosition;
+            @ClickPosition.canceled += instance.OnClickPosition;
         }
 
         private void UnregisterCallbacks(IControlsActions instance)
@@ -194,6 +231,9 @@ public partial class @BaseInput: IInputActionCollection2, IDisposable
             @Click.started -= instance.OnClick;
             @Click.performed -= instance.OnClick;
             @Click.canceled -= instance.OnClick;
+            @ClickPosition.started -= instance.OnClickPosition;
+            @ClickPosition.performed -= instance.OnClickPosition;
+            @ClickPosition.canceled -= instance.OnClickPosition;
         }
 
         public void RemoveCallbacks(IControlsActions instance)
@@ -215,5 +255,6 @@ public partial class @BaseInput: IInputActionCollection2, IDisposable
     {
         void OnRotation(InputAction.CallbackContext context);
         void OnClick(InputAction.CallbackContext context);
+        void OnClickPosition(InputAction.CallbackContext context);
     }
 }

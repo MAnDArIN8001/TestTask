@@ -6,7 +6,8 @@ namespace Setup.Player
     public class PlayerSetup : ScriptableObject
     {
         [field: SerializeField, Header("Controls")] public float MovementSpeed { get; private set; }
-        
+        [field: SerializeField] public float ThrowForce { get; private set; }
+
         [field: SerializeField, Header("Sensetivity")] public float HorizontalSensitivity { get; private set; }
         [field: SerializeField] public float VerticalSensitivity { get; private set; }
         

@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: BasePlayerSetup
   m_EditorClassIdentifier: 
   <MovementSpeed>k__BackingField: 3
+  <ThrowForce>k__BackingField: 5
   <HorizontalSensitivity>k__BackingField: 3
   <VerticalSensitivity>k__BackingField: 10
   <PickingDistance>k__BackingField: 5

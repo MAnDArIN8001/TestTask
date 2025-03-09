@@ -1,6 +1,5 @@
 using Setup.Player;
 using UnityEngine;
-using UnityEngine.Serialization;
 using Utiles.Constraints;
 
 namespace Player.Controls
@@ -9,25 +8,31 @@ namespace Player.Controls
     {
         private float _currentCameraRotationAngel;
 
-        [SerializeField] private Range _verticalViewRange;
+        [SerializeField] private bool _useVerticalRotation;
+        
+        [Space, SerializeField] private Range _verticalViewRange;
 
         [Space, SerializeField] private Transform _cameraRoot;
         
         private PlayerSetup _setup;
 
-        private BaseInput _baseInput;
+        private EmptySpaceRotationSystem _rotationSystem;
 
-        public void Initialize(BaseInput input, PlayerSetup setup)
+        public void Initialize(EmptySpaceRotationSystem rotationSystem, PlayerSetup setup)
         {
-            _baseInput = input;
+            _rotationSystem = rotationSystem;
             _setup = setup;
         }
 
         public void Update()
         {
-            var input = ReadInputValue();
+            var input = _rotationSystem.Delta;
+
+            if (_useVerticalRotation)
+            {
+                RotateVertical(input);   
+            }
             
-            RotateVertical(input);
             RotateHorizontal(input);
         }
         
@@ -50,7 +55,5 @@ namespace Player.Controls
 
             _cameraRoot.localRotation = Quaternion.Euler(_currentCameraRotationAngel, 0, 0);
         }
-
-        private Vector2 ReadInputValue() => _baseInput.Controls.Rotation.ReadValue<Vector2>();
     }
 }

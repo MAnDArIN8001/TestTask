@@ -25,10 +25,7 @@ public class EmptySpaceRotationSystem : MonoBehaviour, IDragHandler, IEndDragHan
     
     public void OnEndDrag(PointerEventData eventData)
     {
-        if (IsPointerOverEmptySpace(eventData))
-        {
-            Delta = Vector2.zero;
-        }
+        Delta = Vector2.zero;
     }
     
     private bool IsPointerOverEmptySpace(PointerEventData eventData)
